@@ -14,7 +14,7 @@ $response = getApiData('https://api.binance.com/api/v3/ticker/price?symbol=BTCUS
 if ($response !== false) {
     $data = json_decode($response, true);
     if (isset($data['price'])) {
-        $price = number_format((float)$data['price'], 2);
+        $price = number_format((float)$data['price'], 0);
         echo "הביטקוין עומד כעת על $price דולר.";
     } else {
         echo "המידע על הביטקוין אינו זמין כרגע, נסו שוב מאוחר יותר.";
