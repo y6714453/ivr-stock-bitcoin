@@ -4,6 +4,8 @@ function getApiData($url) {
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // <<< הוספתי את זה
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // <<< וגם את זה
     $response = curl_exec($ch);
 
     if (curl_errno($ch)) {
@@ -21,7 +23,7 @@ header('Content-Type: text/plain; charset=utf-8');
 
 $url = 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT';
 
-$maxAttempts = 3; // קיצרתי ל-3 ניסיונות לבדיקה מהירה
+$maxAttempts = 3; // עדיין בודקים מהיר
 $attempt = 0;
 $success = false;
 
@@ -31,7 +33,7 @@ while ($attempt < $maxAttempts) {
 
     if ($error_msg !== null) {
         echo "שגיאת CURL: $error_msg\n";
-        break; // אם יש שגיאת רשת עוצרים ישר
+        break;
     }
 
     if ($response !== false) {
@@ -44,7 +46,7 @@ while ($attempt < $maxAttempts) {
         }
     }
 
-    usleep(300000); // 0.3 שניות המתנה בין ניסיונות
+    usleep(300000); // 0.3 שניות המתנה בין נסיונות
 }
 
 if (!$success && $error_msg === null) {
