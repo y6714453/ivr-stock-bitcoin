@@ -9,28 +9,19 @@ function getApiData($url) {
     return $response;
 }
 
-$response = getApiData('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+header('Content-Type: text/plain; charset=utf-8'); // שימו טקסט רגיל, לא json!
 
-header('Content-Type: application/json; charset=utf-8');
+$response = getApiData('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
 
 if ($response !== false) {
     $data = json_decode($response, true);
     if (isset($data['bitcoin']['usd'])) {
         $price = number_format($data['bitcoin']['usd'], 2);
-        echo json_encode([
-            "say" => "הביטקוין עומד כעת על $price דולר.",
-            "goto" => "end"
-        ], JSON_UNESCAPED_UNICODE);
+        echo "הביטקוין עומד כעת על $price דולר.";
     } else {
-        echo json_encode([
-            "say" => "המידע על הביטקוין אינו זמין כרגע, נסו שוב מאוחר יותר.",
-            "goto" => "end"
-        ], JSON_UNESCAPED_UNICODE);
+        echo "המידע על הביטקוין אינו זמין כרגע, נסו שוב מאוחר יותר.";
     }
 } else {
-    echo json_encode([
-        "say" => "התקשורת עם שרת המידע נכשלה.",
-        "goto" => "end"
-    ], JSON_UNESCAPED_UNICODE);
+    echo "התקשורת עם שרת המידע נכשלה.";
 }
 ?>
