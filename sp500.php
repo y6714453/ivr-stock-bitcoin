@@ -9,25 +9,23 @@ function getApiData($url) {
     return $response;
 }
 
-$response = getApiData('https://query1.finance.yahoo.com/v7/finance/quote?symbols=^GSPC');
+$response = getApiData('https://api.binance.com/api/v3/ticker/price?symbol=SPXUSDT'); // שים לב! זה אס אנד פי בתצורת דולר אמריקאי
 
 if ($response !== false) {
     $data = json_decode($response, true);
-    if (isset($data['quoteResponse']['result'][0]['regularMarketPrice'])) {
-        $price = (int) round($data['quoteResponse']['result'][0]['regularMarketPrice']);
+    if (isset($data['price'])) {
+        $price = number_format((float)$data['price'], 0);
+        $parts = explode(',', $price);
 
-        $thousands = floor($price / 1000);
-        $remainder = $price % 1000;
-
-        if ($remainder > 0) {
-            $spokenPrice = $thousands . " אלף ו" . $remainder;
+        if (count($parts) > 1) {
+            $formattedPrice = $parts[0] . ' אלף ו' . $parts[1];
         } else {
-            $spokenPrice = $thousands . " אלף";
+            $formattedPrice = $parts[0];
         }
 
-        echo "אס אנד פי חמש מאות עומד כעת על " . $spokenPrice . " נקודות.";
+        echo "אס אנד פי חמש מאות עומד כעת על $formattedPrice דולר.";
     } else {
-        echo "המידע על מדד אס אנד פי אינו זמין כרגע, נסו שוב מאוחר יותר.";
+        echo "המידע על אס אנד פי חמש מאות אינו זמין כרגע, נסו שוב מאוחר יותר.";
     }
 } else {
     echo "התקשורת עם שרת המידע נכשלה.";
