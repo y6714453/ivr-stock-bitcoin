@@ -9,14 +9,12 @@ function getApiData($url) {
     return $response;
 }
 
-// נביא נתון על S&P 500 מהאתר Yahoo Finance
 $response = getApiData('https://query1.finance.yahoo.com/v8/finance/chart/^GSPC');
 
 if ($response !== false) {
     $data = json_decode($response, true);
     if (isset($data['chart']['result'][0]['meta']['regularMarketPrice'])) {
         $price = number_format((float)$data['chart']['result'][0]['meta']['regularMarketPrice'], 0);
-        
         $thousands = floor($price / 1000);
         $rest = $price % 1000;
 
