@@ -14,15 +14,8 @@ $response = getApiData('https://api.binance.com/api/v3/ticker/price?symbol=BTCUS
 if ($response !== false) {
     $data = json_decode($response, true);
     if (isset($data['price'])) {
-        $price = (int) $data['price']; // נמיר למספר שלם
-        $thousands = floor($price / 1000); // החלק של האלפים
-        $remainder = $price % 1000;         // השארית
-
-        if ($remainder > 0) {
-            echo "הביטקוין עומד כעת על $thousands אלף ו־$remainder דולר.";
-        } else {
-            echo "הביטקוין עומד כעת על $thousands אלף דולר.";
-        }
+        $price = (int) $data['price']; // ממיר את המחיר למספר שלם
+        echo "מחיר הביטקוין כעת הוא: $price";
     } else {
         echo "המידע על הביטקוין אינו זמין כרגע, נסו שוב מאוחר יותר.";
     }
