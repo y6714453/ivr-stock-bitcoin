@@ -14,12 +14,12 @@ $response = getApiData('https://api.binance.com/api/v3/ticker/price?symbol=BTCUS
 if ($response !== false) {
     $data = json_decode($response, true);
     if (isset($data['price'])) {
-        $price = (int) $data['price']; // נמיר למספר שלם
-        $thousands = floor($price / 1000); // החלק של האלפים
-        $remainder = $price % 1000;         // השארית
+        $fullPrice = (int) $data['price'];
+        $thousands = floor($fullPrice / 1000);
+        $remainder = $fullPrice % 1000;
 
         if ($remainder > 0) {
-            echo "הביטקוין עומד כעת על $thousands אלף ו־$remainder דולר.";
+            echo "הביטקוין עומד כעת על $thousands אלף — $remainder דולר.";
         } else {
             echo "הביטקוין עומד כעת על $thousands אלף דולר.";
         }
