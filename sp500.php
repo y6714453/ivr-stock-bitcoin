@@ -13,7 +13,7 @@ function getApiData($url) {
 $apiKey = 'd08h4vpr01qh1ecc64o0d08h4vpr01qh1ecc64og'; // אל תשכח להכניס את המפתח שלך כאן!
 
 // כתובת ה-API של Finnhub למדד S&P 500
-$url = "https://finnhub.io/api/v1/quote?symbol=^GSPC&token=$apiKey";
+$url = "https://finnhub.io/api/v1/quote?symbol=SPY&token=$apiKey";
 
 $cacheFile = __DIR__ . '/sp500_cache.txt';
 $cacheTime = 12; // שניות בין עדכון לעדכון
