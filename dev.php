@@ -2,5 +2,5 @@
 // קוד PHP פשוט שמחזיר מספר שלם
 
 header('Content-Type: text/plain');
-echo 1234;
+echo 94561;
 ?>
