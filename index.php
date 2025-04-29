@@ -18,10 +18,12 @@ if ($response !== false) {
         $thousands = floor($fullPrice / 1000);
         $remainder = $fullPrice % 1000;
 
-        if ($remainder > 0) {
-            echo "הביטקוין עומד כעת על $thousands אלף — $remainder דולר.";
-        } else {
+        if ($thousands > 0 && $remainder > 0) {
+            echo "הביטקוין עומד כעת על $thousands אלף ו $remainder דולר.";
+        } elseif ($thousands > 0 && $remainder == 0) {
             echo "הביטקוין עומד כעת על $thousands אלף דולר.";
+        } else {
+            echo "הביטקוין עומד כעת על $fullPrice דולר.";
         }
     } else {
         echo "המידע על הביטקוין אינו זמין כרגע, נסו שוב מאוחר יותר.";
