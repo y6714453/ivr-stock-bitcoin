@@ -10,27 +10,14 @@ function getApiData($url) {
 }
 
 $url = "https://query1.finance.yahoo.com/v8/finance/chart/^GSPC";
-$cacheFile = __DIR__ . '/sp500_cache.txt';
-$cacheTime = 12; // שניות בין עדכון לעדכון
+$response = getApiData($url);
+$data = json_decode($response, true);
 
-// עדכון הקובץ רק אם עבר הזמן
-if (!file_exists($cacheFile) || (time() - filemtime($cacheFile)) > $cacheTime) {
-    $response = getApiData($url);
-    if ($response !== false) {
-        $data = json_decode($response, true);
-        $price = $data['chart']['result'][0]['meta']['regularMarketPrice'] ?? null;
-        if ($price !== null) {
-            $priceFormatted = number_format((float)$price, 0);
-            file_put_contents($cacheFile, $priceFormatted);
-        }
-    }
-}
-
-// הצגת התוצאה
-if (file_exists($cacheFile)) {
-    $cachedPrice = file_get_contents($cacheFile);
-    echo "מדד האס אנד פי 500 עומד כעת על $cachedPrice דולר.";
+// בדיקה מהירה
+if (isset($data['chart']['result'][0]['meta']['regularMarketPrice'])) {
+    $price = $data['chart']['result'][0]['meta']['regularMarketPrice'];
+    echo "מחיר מדד S&P 500 כעת הוא: " . number_format($price, 2) . " דולר.";
 } else {
-    echo "המידע על מדד האס אנד פי 500 אינו זמין כרגע.";
+    echo "שגיאה: לא נמצא regularMarketPrice";
 }
 ?>
