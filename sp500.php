@@ -1,42 +1,30 @@
 <?php
-function fetchNewSp500Data() {
-    $apiUrl = 'https://financialmodelingprep.com/api/v3/quote/%5EGSPC?apikey=demo'; // אתה תחליף את "demo" ל-API KEY שלך
-
+function getApiData($url) {
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $apiUrl);
+    curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_TIMEOUT, 5);
     $response = curl_exec($ch);
     curl_close($ch);
-
-    if ($response !== false) {
-        $data = json_decode($response, true);
-        if (isset($data[0]['price'])) {
-            return $data[0]['price'];
-        }
-    }
-    return false;
+    return $response;
 }
 
-// מיקום קובץ הקאש
-$cacheFile = 'sp500_cache.txt';
+// כאן האי פי איי כולל המפתח שלך!
+$apiUrl = 'https://api.twelvedata.com/price?symbol=^GSPC&apikey=crp_841rB5X9FT197O7_0OPLewqQ80Il';
 
-// האם הקובץ קיים ועדכני? (12 שניות)
-if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < 12)) {
-    $price = file_get_contents($cacheFile);
-} else {
-    $price = fetchNewSp500Data();
-    if ($price !== false) {
-        file_put_contents($cacheFile, $price);
+// נביא את הנתון
+$response = getApiData($apiUrl);
+
+if ($response !== false) {
+    $data = json_decode($response, true);
+    if (isset($data['price'])) {
+        $price = number_format((float)$data['price'], 0);
+
+        echo "מדד S&P 500 עומד כעת על $price דולר.";
     } else {
-        $price = file_exists($cacheFile) ? file_get_contents($cacheFile) : false;
+        echo "המידע על מדד S&P 500 אינו זמין כרגע, נסו שוב מאוחר יותר.";
     }
-}
-
-if ($price !== false) {
-    $priceFormatted = number_format((float)$price, 0);
-    echo "מדד S&P 500 עומד כעת על {$priceFormatted} דולר.";
 } else {
-    echo "המידע על מדד S&P 500 אינו זמין כרגע, נסו שוב מאוחר יותר.";
+    echo "התקשורת עם שרת המידע נכשלה.";
 }
 ?>
