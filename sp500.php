@@ -9,28 +9,24 @@ function getApiData($url) {
     return $response;
 }
 
-// מפתח API של Finnhub
-$apiKey = 'd08h4vpr01qh1ecc64o0d08h4vpr01qh1ecc64og'; // אל תשכח להכניס את המפתח שלך כאן!
-
-// כתובת ה-API של Finnhub למדד S&P 500
-$url = "https://finnhub.io/api/v1/quote?symbol=SPY&token=$apiKey";
-
+$url = "https://query1.finance.yahoo.com/v8/finance/chart/^GSPC";
 $cacheFile = __DIR__ . '/sp500_cache.txt';
 $cacheTime = 12; // שניות בין עדכון לעדכון
 
-// בדיקת זמן אחרון
+// עדכון הקובץ רק אם עבר הזמן
 if (!file_exists($cacheFile) || (time() - filemtime($cacheFile)) > $cacheTime) {
     $response = getApiData($url);
     if ($response !== false) {
         $data = json_decode($response, true);
-        if (isset($data['c'])) { // c = current price לפי התיעוד של Finnhub
-            $price = number_format((float)$data['c'], 0);
-            file_put_contents($cacheFile, $price);
+        $price = $data['chart']['result'][0]['meta']['regularMarketPrice'] ?? null;
+        if ($price !== null) {
+            $priceFormatted = number_format((float)$price, 0);
+            file_put_contents($cacheFile, $priceFormatted);
         }
     }
 }
 
-// קריאה מהזיכרון
+// הצגת התוצאה
 if (file_exists($cacheFile)) {
     $cachedPrice = file_get_contents($cacheFile);
     echo "מדד האס אנד פי 500 עומד כעת על $cachedPrice דולר.";
