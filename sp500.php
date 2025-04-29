@@ -9,24 +9,30 @@ function getApiData($url) {
     return $response;
 }
 
-$apiKey = "OVXGTL0ZUHCS61S7";
+// כאן תכניס את המפתח שלך:
+$apiKey = 'OVXGTL0ZUHCS61S7'; // ← תוכל להחליף במפתח שלך אם תקבל חדש
 $response = getApiData("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=SPY&apikey=$apiKey");
 
 if ($response !== false) {
     $data = json_decode($response, true);
     if (isset($data["Global Quote"]["05. price"])) {
-        $price = number_format((float)$data["Global Quote"]["05. price"], 0);
+        $price = (float)$data["Global Quote"]["05. price"];
+        $price = round($price); // עיגול למספר שלם
 
-        $thousands = floor($price / 1000);
-        $rest = $price % 1000;
-
-        if ($rest > 0) {
-            echo "מדד האס אנד פי חמש מאות עומד כעת על $thousands אלף ו$rest דולר.";
+        if ($price < 1000) {
+            echo "מדד האס אנד פי חמש מאות עומד כעת על $price דולר.";
         } else {
-            echo "מדד האס אנד פי חמש מאות עומד כעת על $thousands אלף דולר.";
+            $thousands = floor($price / 1000);
+            $rest = $price % 1000;
+
+            if ($rest > 0) {
+                echo "מדד האס אנד פי חמש מאות עומד כעת על $thousands אלף ו$rest דולר.";
+            } else {
+                echo "מדד האס אנד פי חמש מאות עומד כעת על $thousands אלף דולר.";
+            }
         }
     } else {
-        echo "המידע על מדד האס אנד פי חמש מאות לא זמין כרגע.";
+        echo "המידע על מדד האס אנד פי חמש מאות אינו זמין כרגע.";
     }
 } else {
     echo "התקשורת עם שרת המידע נכשלה.";
