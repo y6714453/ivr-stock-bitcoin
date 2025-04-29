@@ -19,7 +19,7 @@ $data = json_decode($response, true);
 
 if (isset($data['chart']['result'][0]['meta']['regularMarketPrice'])) {
     $price = (int) $data['chart']['result'][0]['meta']['regularMarketPrice']; // הופך ל־INT
-    echo "מדד ה־S&P500 עומד על: $price";
+    echo "מדד ה S & P 500 עומד על: $price";
 } else {
     echo "שגיאה: לא נמצא מחיר עדכני למדד.";
 }
