@@ -1,40 +1,42 @@
 <?php
-function getApiData($url) {
+function fetchNewSp500Data() {
+    $apiUrl = 'https://financialmodelingprep.com/api/v3/quote/%5EGSPC?apikey=demo'; // אתה תחליף את "demo" ל-API KEY שלך
+
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_URL, $apiUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_TIMEOUT, 5);
     $response = curl_exec($ch);
     curl_close($ch);
-    return $response;
+
+    if ($response !== false) {
+        $data = json_decode($response, true);
+        if (isset($data[0]['price'])) {
+            return $data[0]['price'];
+        }
+    }
+    return false;
 }
 
-// כאן תכניס את המפתח שלך:
-$apiKey = 'OVXGTL0ZUHCS61S7'; // ← תוכל להחליף במפתח שלך אם תקבל חדש
-$response = getApiData("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=SPY&apikey=$apiKey");
+// מיקום קובץ הקאש
+$cacheFile = 'sp500_cache.txt';
 
-if ($response !== false) {
-    $data = json_decode($response, true);
-    if (isset($data["Global Quote"]["05. price"])) {
-        $price = (float)$data["Global Quote"]["05. price"];
-        $price = round($price); // עיגול למספר שלם
-
-        if ($price < 1000) {
-            echo "מדד האס אנד פי חמש מאות עומד כעת על $price דולר.";
-        } else {
-            $thousands = floor($price / 1000);
-            $rest = $price % 1000;
-
-            if ($rest > 0) {
-                echo "מדד האס אנד פי חמש מאות עומד כעת על $thousands אלף ו$rest דולר.";
-            } else {
-                echo "מדד האס אנד פי חמש מאות עומד כעת על $thousands אלף דולר.";
-            }
-        }
-    } else {
-        echo "המידע על מדד האס אנד פי חמש מאות אינו זמין כרגע.";
-    }
+// האם הקובץ קיים ועדכני? (12 שניות)
+if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < 12)) {
+    $price = file_get_contents($cacheFile);
 } else {
-    echo "התקשורת עם שרת המידע נכשלה.";
+    $price = fetchNewSp500Data();
+    if ($price !== false) {
+        file_put_contents($cacheFile, $price);
+    } else {
+        $price = file_exists($cacheFile) ? file_get_contents($cacheFile) : false;
+    }
+}
+
+if ($price !== false) {
+    $priceFormatted = number_format((float)$price, 0);
+    echo "מדד S&P 500 עומד כעת על {$priceFormatted} דולר.";
+} else {
+    echo "המידע על מדד S&P 500 אינו זמין כרגע, נסו שוב מאוחר יותר.";
 }
 ?>
