@@ -9,17 +9,13 @@ function getApiData($url) {
     return $response;
 }
 
-// הגדרות
-$apiKey = 'OVXGTL0ZUHUCS61S7'; // שים לב להסיר רווח אם הועתק עם רווח באמצע
-$symbol = '^GSPC'; // מדד S&P 500
-$url = "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=$symbol&apikey=$apiKey";
-
-$response = getApiData($url);
+$apiKey = "OVXGTL0ZUHCS61S7";
+$response = getApiData("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=SPY&apikey=$apiKey");
 
 if ($response !== false) {
     $data = json_decode($response, true);
-    if (isset($data['Global Quote']['05. price'])) {
-        $price = number_format((float)$data['Global Quote']['05. price'], 0);
+    if (isset($data["Global Quote"]["05. price"])) {
+        $price = number_format((float)$data["Global Quote"]["05. price"], 0);
 
         $thousands = floor($price / 1000);
         $rest = $price % 1000;
@@ -30,7 +26,7 @@ if ($response !== false) {
             echo "מדד האס אנד פי חמש מאות עומד כעת על $thousands אלף דולר.";
         }
     } else {
-        echo "המידע על מדד האס אנד פי חמש מאות לא זמין כרגע, נסו שוב מאוחר יותר.";
+        echo "המידע על מדד האס אנד פי חמש מאות לא זמין כרגע.";
     }
 } else {
     echo "התקשורת עם שרת המידע נכשלה.";
