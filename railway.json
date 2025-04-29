@@ -4,6 +4,6 @@
     "buildCommand": null
   },
   "deploy": {
-    "startCommand": "php -S 0.0.0.0:$PORT index.php"
+    "startCommand": "php -S 0.0.0.0:$PORT"
   }
 }
