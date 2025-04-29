@@ -9,24 +9,28 @@ function getApiData($url) {
     return $response;
 }
 
-// קבלת נתון S&P 500 מהאתר Yahoo Finance
-$response = getApiData('https://query1.finance.yahoo.com/v8/finance/chart/^GSPC');
+// הגדרות
+$apiKey = 'OVXGTL0ZUHUCS61S7'; // שים לב להסיר רווח אם הועתק עם רווח באמצע
+$symbol = '^GSPC'; // מדד S&P 500
+$url = "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=$symbol&apikey=$apiKey";
+
+$response = getApiData($url);
 
 if ($response !== false) {
     $data = json_decode($response, true);
-    if (isset($data['chart']['result'][0]['meta']['regularMarketPrice'])) {
-        $price = number_format((float)$data['chart']['result'][0]['meta']['regularMarketPrice'], 0);
+    if (isset($data['Global Quote']['05. price'])) {
+        $price = number_format((float)$data['Global Quote']['05. price'], 0);
 
         $thousands = floor($price / 1000);
         $rest = $price % 1000;
 
         if ($rest > 0) {
-            echo "האס אנד פי 500 עומד כעת על $thousands אלף ו$rest דולר.";
+            echo "מדד האס אנד פי חמש מאות עומד כעת על $thousands אלף ו$rest דולר.";
         } else {
-            echo "האס אנד פי 500 עומד כעת על $thousands אלף דולר.";
+            echo "מדד האס אנד פי חמש מאות עומד כעת על $thousands אלף דולר.";
         }
     } else {
-        echo "המידע על האס אנד פי 500 אינו זמין כרגע, נסו שוב מאוחר יותר.";
+        echo "המידע על מדד האס אנד פי חמש מאות לא זמין כרגע, נסו שוב מאוחר יותר.";
     }
 } else {
     echo "התקשורת עם שרת המידע נכשלה.";
