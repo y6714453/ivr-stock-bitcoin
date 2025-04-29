@@ -9,21 +9,28 @@ function getApiData($url) {
     return $response;
 }
 
-// כתובת API עבור מדד S&P 500 מבית Alpha Vantage
 $apiKey = 'OVXGTL0ZUHCS61S7';
 $url = "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=SPY&apikey=$apiKey";
+$cacheFile = __DIR__ . '/sp500_cache.txt';
+$cacheTime = 12; // שניות בין עדכון לעדכון
 
-$response = getApiData($url);
-
-if ($response !== false) {
-    $data = json_decode($response, true);
-    if (isset($data['Global Quote']['05. price'])) {
-        $price = number_format((float)$data['Global Quote']['05. price'], 0);
-        echo "מדד S&P 500 עומד כעת על $price דולר.";
-    } else {
-        echo "המידע על מדד S&P 500 אינו זמין כרגע, נסו שוב מאוחר יותר.";
+// בדיקת זמן אחרון
+if (!file_exists($cacheFile) || (time() - filemtime($cacheFile)) > $cacheTime) {
+    $response = getApiData($url);
+    if ($response !== false) {
+        $data = json_decode($response, true);
+        if (isset($data['Global Quote']['05. price'])) {
+            $price = number_format((float)$data['Global Quote']['05. price'], 0);
+            file_put_contents($cacheFile, $price);
+        }
     }
+}
+
+// קריאה מהזיכרון
+if (file_exists($cacheFile)) {
+    $cachedPrice = file_get_contents($cacheFile);
+    echo "מדד S&P 500 עומד כעת על $cachedPrice דולר.";
 } else {
-    echo "התקשורת עם שרת המידע נכשלה.";
+    echo "המידע על מדד S&P 500 אינו זמין כרגע.";
 }
 ?>
