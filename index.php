@@ -1,31 +1,23 @@
 <?php
-function getApiData($url) {
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-    $response = curl_exec($ch);
-    curl_close($ch);
-    return $response;
-}
-
 $url = "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT";
 $cacheFile = __DIR__ . '/bitcoin_cache.txt';
-$cacheTime = 12; // שניות
+$cacheTime = 12; // שניות בין עדכון לעדכון
 
-// עדכון הקובץ רק אם עברו 12 שניות
-if (!file_exists($cacheFile) || (time() - filemtime($cacheFile)) > $cacheTime) {
-    $response = getApiData($url);
+// ננסה למשוך מה-API אם עבר מספיק זמן
+$shouldUpdate = !file_exists($cacheFile) || (time() - filemtime($cacheFile)) > $cacheTime;
+
+if ($shouldUpdate) {
+    $response = @file_get_contents($url);
     if ($response !== false) {
         $data = json_decode($response, true);
-        if (isset($data['price'])) {
+        if (isset($data['price']) && is_numeric($data['price'])) {
             $price = number_format((float)$data['price'], 0);
             file_put_contents($cacheFile, $price);
         }
     }
 }
 
-// קריאה מהקובץ
+// שליפה מהקובץ
 if (file_exists($cacheFile)) {
     $cachedPrice = file_get_contents($cacheFile);
 
