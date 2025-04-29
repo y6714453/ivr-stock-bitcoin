@@ -13,7 +13,7 @@ $url = "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT";
 $cacheFile = __DIR__ . '/bitcoin_cache.txt';
 $cacheTime = 12; // שניות
 
-// בדיקת זמן אחרון
+// עדכון הקובץ רק אם עברו 12 שניות
 if (!file_exists($cacheFile) || (time() - filemtime($cacheFile)) > $cacheTime) {
     $response = getApiData($url);
     if ($response !== false) {
@@ -25,19 +25,24 @@ if (!file_exists($cacheFile) || (time() - filemtime($cacheFile)) > $cacheTime) {
     }
 }
 
-// קריאה מהזיכרון
+// קריאה מהקובץ
 if (file_exists($cacheFile)) {
     $cachedPrice = file_get_contents($cacheFile);
 
-    $thousands = floor($cachedPrice / 1000);
-    $rest = $cachedPrice % 1000;
+    if (is_numeric($cachedPrice)) {
+        $cachedPrice = (int)$cachedPrice;
+        $thousands = floor($cachedPrice / 1000);
+        $rest = $cachedPrice % 1000;
 
-    if ($thousands > 0 && $rest > 0) {
-        echo "הביטקוין עומד כעת על $thousands אלף ו$rest דולר.";
-    } elseif ($thousands > 0) {
-        echo "הביטקוין עומד כעת על $thousands אלף דולר.";
+        if ($thousands > 0 && $rest > 0) {
+            echo "הביטקוין עומד כעת על $thousands אלף ו$rest דולר.";
+        } elseif ($thousands > 0) {
+            echo "הביטקוין עומד כעת על $thousands אלף דולר.";
+        } else {
+            echo "הביטקוין עומד כעת על $cachedPrice דולר.";
+        }
     } else {
-        echo "הביטקוין עומד כעת על $cachedPrice דולר.";
+        echo "המידע על הביטקוין אינו זמין כרגע.";
     }
 } else {
     echo "המידע על הביטקוין אינו זמין כרגע.";
