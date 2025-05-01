@@ -4,8 +4,8 @@ $data = json_decode($response, true);
 
 if (isset($data['price'])) {
     $price = (int) $data['price'];
-    echo $price;
+    echo "מחיר הביטקוין כעת הוא: $price";
 } else {
-    echo 0;
+    echo "המידע על הביטקוין אינו זמין כרגע.";
 }
 ?>
