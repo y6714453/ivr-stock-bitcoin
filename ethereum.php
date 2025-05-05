@@ -77,7 +77,7 @@ if (
 
     $priceText = spellOutPrice($currentPrice);
 
-    echo "ה ETERIUM עומד כעת על: $priceText דולר. ";
+    echo "ה אִיתֵרִיוּם עומד כעת על: $priceText דולר. ";
     echo "מאז פתיחת היום נרשמה " . formatChange($currentPrice, $priceDay) . ". ";
     echo "מתחילת השבוע נרשמה " . formatChange($currentPrice, $priceWeek) . ". ";
     echo "מתחילת השנה נרשמה " . formatChange($currentPrice, $priceYear) . ". ";
@@ -89,6 +89,6 @@ if (
         echo "המחיר הנוכחי $sign לשיא השנתי ב $distanceText אחוז.";
     }
 } else {
-    echo "המידע על ה ETERIUM אינו זמין כעת.";
+    echo "המידע על ה אִיתריום אינו זמין כעת.";
 }
 ?>
