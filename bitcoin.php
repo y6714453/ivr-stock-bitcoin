@@ -13,72 +13,63 @@ function getApiData($url) {
     return $response;
 }
 
-function formatChange($percent) {
-    $symbol = $percent >= 0 ? "עלייה" : "ירידה";
-    $value = number_format(abs($percent), 2);
-    return "$symbol של $value%";
+function findClosestPriceBefore($timestamps, $prices, $targetTimestamp) {
+    $bestPrice = null;
+    for ($i = count($timestamps) - 1; $i >= 0; $i--) {
+        if ($timestamps[$i] <= $targetTimestamp) {
+            $bestPrice = $prices[$i];
+            break;
+        }
+    }
+    return $bestPrice;
 }
 
-// שינוי תסמל כאן את הכתובת הרלוונטית – ביטקוין
-$url = "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?range=1y&interval=1d";
+function formatChange($current, $previous) {
+    if ($previous === null || $previous == 0) {
+        return "אין נתון זמין.";
+    }
+    $change = (($current - $previous) / $previous) * 100;
+    $sign = $change > 0 ? "עלייה" : ($change < 0 ? "ירידה" : "שינוי אפסי");
+    return "$sign של " . number_format(abs($change), 2) . "%";
+}
+
+$url = "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?range=6mo&interval=1d";
 $response = getApiData($url);
 $data = json_decode($response, true);
 
-if (!isset($data['chart']['result'][0])) {
-    echo "המידע על הביטקוין אינו זמין כעת.";
-    exit;
-}
+if (
+    isset($data['chart']['result'][0]['meta']['regularMarketPrice']) &&
+    isset($data['chart']['result'][0]['timestamp']) &&
+    isset($data['chart']['result'][0]['indicators']['quote'][0]['close'])
+) {
+    $currentPrice = $data['chart']['result'][0]['meta']['regularMarketPrice'];
+    $timestamps = $data['chart']['result'][0]['timestamp'];
+    $prices = $data['chart']['result'][0]['indicators']['quote'][0]['close'];
 
-$chart = $data['chart']['result'][0];
-$prices = $chart['indicators']['quote'][0]['close'];
-$timestamps = $chart['timestamp'];
-$currentPrice = end($prices);
-$firstDate = date('Y-m-d', $timestamps[0]);
+    $now = time();
+    $startOfDay = strtotime("today", $now);
+    $startOfWeek = strtotime("last sunday", $now); // או "this week"
+    $startOfMonth = strtotime(date("Y-m-01", $now));
+    $startOfYear = strtotime(date("Y-01-01", $now));
 
-// פונקציה למציאת מחיר לפי תנאי תאריך
-function findClosestPrice($timestamps, $prices, $targetDate) {
-    foreach ($timestamps as $i => $ts) {
-        $date = date('Y-m-d', $ts);
-        if ($date >= $targetDate && isset($prices[$i])) {
-            return $prices[$i];
-        }
+    $priceDay = findClosestPriceBefore($timestamps, $prices, $startOfDay);
+    $priceWeek = findClosestPriceBefore($timestamps, $prices, $startOfWeek);
+    $priceMonth = findClosestPriceBefore($timestamps, $prices, $startOfMonth);
+    $priceYear = findClosestPriceBefore($timestamps, $prices, $startOfYear);
+    $yearHigh = $data['chart']['result'][0]['meta']['fiftyTwoWeekHigh'];
+
+    echo "הביטקויין עומד כעת על: " . number_format($currentPrice, 0) . " דולר. ";
+    echo "מאז פתיחת היום נרשמה " . formatChange($currentPrice, $priceDay) . ". ";
+    echo "מתחילת השבוע נרשמה " . formatChange($currentPrice, $priceWeek) . ". ";
+    echo "מתחילת החודש נרשמה " . formatChange($currentPrice, $priceMonth) . ". ";
+    echo "מתחילת השנה נרשמה " . formatChange($currentPrice, $priceYear) . ". ";
+
+    if ($yearHigh && $yearHigh != 0) {
+        $distanceFromHigh = (($currentPrice - $yearHigh) / $yearHigh) * 100;
+        $sign = $distanceFromHigh >= 0 ? "מעל" : "מתחת";
+        echo "המחיר הנוכחי $sign לשיא השנתי ב־" . number_format(abs($distanceFromHigh), 2) . "%.";
     }
-    return null;
+} else {
+    echo "המידע על הביטקוין אינו זמין כעת.";
 }
-
-// תאריכים רלוונטיים
-$today = date('Y-m-d');
-$weekStart = date('Y-m-d', strtotime('monday this week'));
-$monthStart = date('Y-m-01');
-$yearStart = date('Y-01-01');
-
-// חישוב שינויים
-$dayStartPrice = findClosestPrice($timestamps, $prices, $today);
-$weekStartPrice = findClosestPrice($timestamps, $prices, $weekStart);
-$monthStartPrice = findClosestPrice($timestamps, $prices, $monthStart);
-$yearStartPrice = findClosestPrice($timestamps, $prices, $yearStart);
-$yearHigh = $chart['meta']['fiftyTwoWeekHigh'];
-
-function calcChange($from, $to) {
-    if ($from === null || $to === null || $from == 0) return null;
-    return (($to - $from) / $from) * 100;
-}
-
-// ניסוח סופי
-echo "הביטקויין עומד כעת על: " . number_format($currentPrice, 0) . " דולר.\n";
-
-if (($change = calcChange($dayStartPrice, $currentPrice)) !== null)
-    echo "מאז פתיחת היום נרשמה " . formatChange($change) . ".\n";
-
-if (($change = calcChange($weekStartPrice, $currentPrice)) !== null)
-    echo "מתחילת השבוע נרשמה " . formatChange($change) . ".\n";
-
-if (($change = calcChange($monthStartPrice, $currentPrice)) !== null)
-    echo "מתחילת החודש נרשמה " . formatChange($change) . ".\n";
-
-if (($change = calcChange($yearStartPrice, $currentPrice)) !== null)
-    echo "מתחילת השנה נרשמה " . formatChange($change) . ".\n";
-
-if (($fromPeak = calcChange($currentPrice, $yearHigh)) !== null)
-    echo "המחיר הנוכחי נמוך ב־" . number_format(abs($fromPeak), 2) . "% מהשיא השנתי.";
 ?>
