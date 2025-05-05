@@ -45,7 +45,7 @@ function spellOutPrice($price) {
     }
     if ($remainder > 0) {
         if ($thousands > 0) {
-            $text .= " ו־";
+            $text .= " ו ";
         }
         $text .= number_format($remainder, 0);
     }
@@ -86,7 +86,7 @@ if (
         $distance = (($currentPrice - $yearHigh) / $yearHigh) * 100;
         $sign = $distance >= 0 ? "מעל" : "מתחת";
         $distanceText = str_replace(".", " נקודה ", number_format(abs($distance), 2));
-        echo "המחיר הנוכחי $sign לשיא השנתי ב־$distanceText אחוז.";
+        echo "המחיר הנוכחי $sign לשיא השנתי ב $distanceText אחוז.";
     }
 } else {
     echo "המידע על הביטקוין אינו זמין כעת.";
