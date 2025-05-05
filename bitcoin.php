@@ -1,73 +1,61 @@
 <?php
-// כתובת API של CoinGecko למחיר ביטקוין במטבע דולר
-$url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=max";
+function getApiData($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_ENCODING, '');
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36'
+    ]);
+    $response = curl_exec($ch);
+    curl_close($ch);
+    return $response;
+}
 
-// שליפת נתונים מה־API
-$response = file_get_contents($url);
+// הגדרת הסימבול והטווח
+$symbol = "BTC-USD";
+$url = "https://query1.finance.yahoo.com/v8/finance/chart/$symbol?interval=1d&range=1y";
+
+// שליפת הנתונים
+$response = getApiData($url);
 $data = json_decode($response, true);
 
-// שליפת המחיר הנוכחי מ־Binance
-$price_response = file_get_contents("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");
-$price_data = json_decode($price_response, true);
-$current_price = isset($price_data['price']) ? (float)$price_data['price'] : null;
-
-if (!$current_price || !isset($data['prices'])) {
-    echo "המידע על הביטקוין אינו זמין כעת.";
+// בדיקת קיום תוצאה
+if (!isset($data['chart']['result'][0])) {
+    echo "המידע על $symbol אינו זמין כעת.";
     exit;
 }
 
-// פונקציה למציאת המחיר בתאריך מסוים
-function findClosestPrice($data, $timestamp) {
-    $closest = null;
-    $min_diff = PHP_INT_MAX;
-    foreach ($data as $entry) {
-        $diff = abs($entry[0] - $timestamp);
-        if ($diff < $min_diff) {
-            $min_diff = $diff;
-            $closest = $entry[1];
-        }
-    }
-    return $closest;
+// חילוץ נתונים
+$result = $data['chart']['result'][0];
+$timestamps = $result['timestamp'];
+$prices = $result['indicators']['quote'][0]['close'];
+
+$current_price = end($prices);
+$start_of_day_price = $prices[count($prices) - 2]; // אתמול
+$start_of_week_price = $prices[max(0, count($prices) - 6)];
+$start_of_month_price = $prices[max(0, count($prices) - 22)];
+$start_of_year_price = $prices[0];
+$ath = max($prices);
+
+// חישוב אחוזים
+function calc_change($new, $old) {
+    if ($old == 0) return 0;
+    return round((($new - $old) / $old) * 100, 2);
 }
 
-// תאריכים נדרשים
-$now = time() * 1000;
-$start_of_day = strtotime("today") * 1000;
-$start_of_week = strtotime("last sunday") * 1000;
-$start_of_month = strtotime("first day of this month") * 1000;
-$start_of_year = strtotime("first day of January") * 1000;
-
-// מחירים היסטוריים
-$price_day = findClosestPrice($data['prices'], $start_of_day);
-$price_week = findClosestPrice($data['prices'], $start_of_week);
-$price_month = findClosestPrice($data['prices'], $start_of_month);
-$price_year = findClosestPrice($data['prices'], $start_of_year);
-
-// מחיר שיא מאז ומתמיד
-$highest = 0;
-foreach ($data['prices'] as $entry) {
-    if ($entry[1] > $highest) {
-        $highest = $entry[1];
-    }
-}
-
-// חישוב שינויים באחוזים
-function percent_change($current, $past) {
-    if (!$past) return 0;
-    return round((($current - $past) / $past) * 100, 2);
-}
-
-$change_day = percent_change($current_price, $price_day);
-$change_week = percent_change($current_price, $price_week);
-$change_month = percent_change($current_price, $price_month);
-$change_year = percent_change($current_price, $price_year);
-$from_ath = percent_change($current_price, $highest);
+$day_change = calc_change($current_price, $start_of_day_price);
+$week_change = calc_change($current_price, $start_of_week_price);
+$month_change = calc_change($current_price, $start_of_month_price);
+$year_change = calc_change($current_price, $start_of_year_price);
+$from_ath = calc_change($current_price, $ath);
 
 // ניסוח התוצאה
 echo "מחיר הביטקוין כעת הוא: " . number_format($current_price, 0) . " דולר.\n";
-echo "שינוי מתחילת היום: " . $change_day . "%.\n";
-echo "שינוי מתחילת השבוע: " . $change_week . "%.\n";
-echo "שינוי מתחילת החודש: " . $change_month . "%.\n";
-echo "שינוי מתחילת השנה: " . $change_year . "%.\n";
-echo "מרחק מהשיא ההיסטורי: " . abs($from_ath) . "% " . ($from_ath < 0 ? "נמוך מהשיא." : "מעל השיא.");
+echo "שינוי מתחילת היום: $day_change%.\n";
+echo "שינוי מתחילת השבוע: $week_change%.\n";
+echo "שינוי מתחילת החודש: $month_change%.\n";
+echo "שינוי מתחילת השנה: $year_change%.\n";
+echo "מרחק מהשיא השנתי: " . abs($from_ath) . "% " . ($from_ath < 0 ? "נמוך מהשיא." : "מעל השיא.");
 ?>
