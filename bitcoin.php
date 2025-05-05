@@ -34,6 +34,24 @@ function formatChange($current, $previous) {
     return "$sign של $changeText אחוז";
 }
 
+function spellOutPrice($price) {
+    $price = round($price);
+    $thousands = floor($price / 1000);
+    $remainder = $price % 1000;
+
+    $text = '';
+    if ($thousands > 0) {
+        $text .= number_format($thousands, 0) . " אלף";
+    }
+    if ($remainder > 0) {
+        if ($thousands > 0) {
+            $text .= " ו־";
+        }
+        $text .= number_format($remainder, 0);
+    }
+    return $text;
+}
+
 $url = "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?range=6mo&interval=1d";
 $response = getApiData($url);
 $data = json_decode($response, true);
@@ -57,7 +75,7 @@ if (
     $priceYear = findClosestPriceBefore($timestamps, $prices, $startOfYear);
     $yearHigh = $data['chart']['result'][0]['meta']['fiftyTwoWeekHigh'];
 
-    $priceText = number_format($currentPrice, 0);
+    $priceText = spellOutPrice($currentPrice);
 
     echo "הביטקויין עומד כעת על: $priceText דולר. ";
     echo "מאז פתיחת היום נרשמה " . formatChange($currentPrice, $priceDay) . ". ";
