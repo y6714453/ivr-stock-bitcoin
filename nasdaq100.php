@@ -30,8 +30,9 @@ function formatChange($current, $previous) {
     }
     $change = (($current - $previous) / $previous) * 100;
     $sign = $change > 0 ? "עלייה" : ($change < 0 ? "ירידה" : "שינוי אפסי");
-    $changeText = str_replace(".", " נקודה ", number_format(abs($change), 2));
-    return "$sign של $changeText אחוז";
+    $absChange = abs($change);
+    $changeText = $absChange == 1 ? "אחוז" : str_replace(".", " נקודה ", number_format($absChange, 2)) . " אחוז";
+    return "$sign של $changeText";
 }
 
 function spellOutPrice($price) {
@@ -90,8 +91,9 @@ if (
 
     if ($yearHigh && $yearHigh != 0) {
         $distance = (($currentPrice - $yearHigh) / $yearHigh) * 100;
-        $distanceText = str_replace(".", " נקודה ", number_format(abs($distance), 2));
-        echo "המחיר הנוכחי במרחק $distanceText אחוז מהשיא השנתי.";
+        $absDistance = abs($distance);
+        $distanceText = $absDistance == 1 ? "אחוז" : str_replace(".", " נקודה ", number_format($absDistance, 2)) . " אחוז";
+        echo "המחיר הנוכחי רחוק מהשיא ב־$distanceText.";
     }
 } else {
     echo "המידע על ה נסדאק 100 אינו זמין כעת.";
