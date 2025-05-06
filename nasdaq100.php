@@ -41,7 +41,13 @@ function spellOutPrice($price) {
 
     $text = '';
     if ($thousands > 0) {
-        $text .= number_format($thousands, 0) . " אלף";
+        if ($thousands == 1) {
+            $text .= "אלף";
+        } elseif ($thousands == 2) {
+            $text .= "אלפיים";
+        } else {
+            $text .= number_format($thousands, 0) . " אלף";
+        }
     }
     if ($remainder > 0) {
         if ($thousands > 0) {
