@@ -77,7 +77,7 @@ if (
 
     $priceText = spellOutPrice($currentPrice);
 
-    echo "ה אִיתֵרִיוּם עומד כעת על: $priceText דולר. ";
+    echo "הָאִיתֵרִיוּם עומד כעת על: $priceText דולר. ";
     echo "מאז פתיחת היום נרשמה " . formatChange($currentPrice, $priceDay) . ". ";
     echo "מתחילת השבוע נרשמה " . formatChange($currentPrice, $priceWeek) . ". ";
     echo "מתחילת השנה נרשמה " . formatChange($currentPrice, $priceYear) . ". ";
@@ -88,6 +88,6 @@ if (
         echo "המחיר הנוכחי במרחק $distanceText אחוז מהשיא השנתי.";
     }
 } else {
-    echo "המידע על ה אִיתריום אינו זמין כעת.";
+    echo "המידע על הָאִיתריום אינו זמין כעת.";
 }
 ?>
