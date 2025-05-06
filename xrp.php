@@ -84,9 +84,8 @@ if (
 
     if ($yearHigh && $yearHigh != 0) {
         $distance = (($currentPrice - $yearHigh) / $yearHigh) * 100;
-        $sign = $distance >= 0 ? "מעל" : "מתחת";
         $distanceText = str_replace(".", " נקודה ", number_format(abs($distance), 2));
-        echo "המחיר הנוכחי $sign לשיא השנתי ב $distanceText אחוז.";
+        echo "המחיר הנוכחי במרחק $distanceText אחוז מהשיא השנתי.";
     }
 } else {
     echo "המידע על ה XRP אינו זמין כעת.";
