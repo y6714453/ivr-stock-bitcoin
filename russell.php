@@ -5,9 +5,7 @@ function getApiData($url) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_TIMEOUT, 5);
     curl_setopt($ch, CURLOPT_ENCODING, '');
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'User-Agent: Mozilla/5.0'
-    ]);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['User-Agent: Mozilla/5.0']);
     $response = curl_exec($ch);
     curl_close($ch);
     return $response;
@@ -30,8 +28,9 @@ function formatChange($current, $previous) {
     }
     $change = (($current - $previous) / $previous) * 100;
     $sign = $change > 0 ? "עלייה" : ($change < 0 ? "ירידה" : "שינוי אפסי");
-    $changeText = str_replace(".", " נקודה ", number_format(abs($change), 2));
-    return "$sign של $changeText אחוז";
+    $absChange = abs($change);
+    $changeText = $absChange == 1 ? "אחוז" : str_replace(".", " נקודה ", number_format($absChange, 2)) . " אחוז";
+    return "$sign של $changeText";
 }
 
 function spellOutPrice($price) {
@@ -90,8 +89,9 @@ if (
 
     if ($yearHigh && $yearHigh != 0) {
         $distance = (($currentPrice - $yearHigh) / $yearHigh) * 100;
-        $distanceText = str_replace(".", " נקודה ", number_format(abs($distance), 2));
-        echo "המחיר הנוכחי במרחק $distanceText אחוז מהשיא השנתי.";
+        $absDistance = abs($distance);
+        $distanceText = $absDistance == 1 ? "אחוז" : str_replace(".", " נקודה ", number_format($absDistance, 2)) . " אחוז";
+        echo "המחיר הנוכחי רחוק מהשיא ב־$distanceText.";
     }
 } else {
     echo "המידע על ה רסאל 2000 אינו זמין כעת.";
