@@ -79,7 +79,7 @@ if (
         $distance = (($currentPrice - $yearHigh) / $yearHigh) * 100;
         $absDist = abs($distance);
         $distText = $absDist == 1.00 ? "אחוז" : str_replace(".", " נקודה ", number_format($absDist, 2)) . " אחוז";
-        echo "המחיר הנוכחי רחוק מהשיא ב־$distText.";
+        echo "המחיר הנוכחי רחוק מהשיא ב $distText.";
     }
 } else {
     echo "המידע על הביטקוין אינו זמין כעת.";
