@@ -69,7 +69,7 @@ if (
     $priceYear = findClosestPriceBefore($timestamps, $prices, $startOfYear);
     $yearHigh = $data['chart']['result'][0]['meta']['fiftyTwoWeekHigh'];
     $priceText = spellOutPrice($currentPrice);
-    echo "ה דאו גונס עומד כעת על: $priceText דולר. ";
+    echo "הָדָאוֹ ג'וֹנְס עומד כעת על: $priceText דולר. ";
     echo "מאז פתיחת היום נרשמה " . formatChange($currentPrice, $priceDay) . ". ";
     echo "מתחילת השבוע נרשמה " . formatChange($currentPrice, $priceWeek) . ". ";
     echo "מתחילת השנה נרשמה " . formatChange($currentPrice, $priceYear) . ". ";
@@ -80,6 +80,6 @@ if (
         echo "המחיר הנוכחי רחוק מהשיא ב־$distText.";
     }
 } else {
-    echo "המידע על ה דאו גונס אינו זמין כעת.";
+    echo "המידע על הָדָאוֹ ג'וֹנְס אינו זמין כעת.";
 }
 ?>
