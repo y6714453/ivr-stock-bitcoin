@@ -82,7 +82,7 @@ if (
 
     $priceText = spellOutPrice($currentPrice);
 
-    echo "ה רסאל 2000 עומד כעת על: $priceText דולר. ";
+    echo "הָרָאְסֵל 2000 עומד כעת על: $priceText דולר. ";
     echo "מאז פתיחת היום נרשמה " . formatChange($currentPrice, $priceDay) . ". ";
     echo "מתחילת השבוע נרשמה " . formatChange($currentPrice, $priceWeek) . ". ";
     echo "מתחילת השנה נרשמה " . formatChange($currentPrice, $priceYear) . ". ";
@@ -94,6 +94,6 @@ if (
         echo "המחיר הנוכחי רחוק מהשיא ב־$distanceText.";
     }
 } else {
-    echo "המידע על ה רסאל 2000 אינו זמין כעת.";
+    echo "המידע על הָרָאְסֵל 2000 אינו זמין כעת.";
 }
 ?>
