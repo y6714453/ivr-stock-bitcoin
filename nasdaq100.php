@@ -84,7 +84,7 @@ if (
 
     $priceText = spellOutPrice($currentPrice);
 
-    echo "ה נסדאק 100 עומד כעת על: $priceText דולר. ";
+    echo "הָנָסְדָאק 100 עומד כעת על: $priceText דולר. ";
     echo "מאז פתיחת היום נרשמה " . formatChange($currentPrice, $priceDay) . ". ";
     echo "מתחילת השבוע נרשמה " . formatChange($currentPrice, $priceWeek) . ". ";
     echo "מתחילת השנה נרשמה " . formatChange($currentPrice, $priceYear) . ". ";
@@ -96,6 +96,6 @@ if (
         echo "המחיר הנוכחי רחוק מהשיא ב־$distanceText.";
     }
 } else {
-    echo "המידע על ה נסדאק 100 אינו זמין כעת.";
+    echo "המידע על הָנָסְדָאק 100 אינו זמין כעת.";
 }
 ?>
