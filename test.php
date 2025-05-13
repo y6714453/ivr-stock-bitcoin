@@ -48,17 +48,9 @@ function spellOutPrice($price) {
     return $text;
 }
 
-// קבלת הטיקר והשם מה-URL
-$symbol = isset($_GET['symbol']) ? $_GET['symbol'] : null;
-$assetName = isset($_GET['name']) ? $_GET['name'] : 'נכס לא מוגדר'; // ברירת מחדל היא 'נכס לא מוגדר'
+// קבלת הטיקר מה-URL
+$symbol = isset($_GET['symbol']) ? $_GET['symbol'] : 'BTC-USD'; // ברירת מחדל היא ביטקוין
 
-// אם לא הוזן טיקר או אם הטיקר לא תקין
-if ($symbol === null || empty($symbol)) {
-    echo "שגיאה: אין טיקר שסופק ב-URL.";
-    exit;
-}
-
-// הגדרת ה-URL עם הטיקר שהוזן
 $url = "https://query1.finance.yahoo.com/v8/finance/chart/$symbol?range=6mo&interval=1d";
 $response = getApiData($url);
 $data = json_decode($response, true);
@@ -81,7 +73,7 @@ if (
     $yearHigh = $data['chart']['result'][0]['meta']['fiftyTwoWeekHigh'];
     $priceText = spellOutPrice($currentPrice);
 
-    echo "$assetName עומד כעת על: $priceText דולר. ";
+    echo "הטיקר $symbol עומד כעת על: $priceText דולר. ";
     echo "מאז פתיחת היום נרשמה " . formatChange($currentPrice, $priceDay) . ". ";
     echo "מתחילת השבוע נרשמה " . formatChange($currentPrice, $priceWeek) . ". ";
     echo "מתחילת השנה נרשמה " . formatChange($currentPrice, $priceYear) . ". ";
