@@ -23,7 +23,7 @@ function findClosestPriceBefore($timestamps, $prices, $targetTimestamp) {
 }
 
 function formatChange($current, $previous) {
-    if ($previous === null || $previous == 0) return "אין נתון זמין.";
+    if ($previous === null || $previous == 0) return "אין נתון זמין";
     $change = (($current - $previous) / $previous) * 100;
     $sign = $change > 0 ? "עלייה" : ($change < 0 ? "ירידה" : "שינוי אפסי");
     $absChange = abs($change);
@@ -48,16 +48,6 @@ function spellOutPrice($price) {
     return $text;
 }
 
-// === מערכת קאשינג === //
-$cacheFile = __DIR__ . '/cache.txt';
-$cacheTime = 10; // שניות
-
-if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $cacheTime) {
-    echo file_get_contents($cacheFile);
-    exit;
-}
-
-// === המשך ריצה רגילה === //
 $url = "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?range=6mo&interval=1d";
 $response = getApiData($url);
 $data = json_decode($response, true);
@@ -72,28 +62,20 @@ if (
     $prices = $data['chart']['result'][0]['indicators']['quote'][0]['close'];
     $now = time();
     $startOfDay = strtotime("today", $now);
-    $startOfWeek = strtotime("last sunday", $now);
-    $startOfYear = strtotime(date("Y-01-01", $now));
     $priceDay = findClosestPriceBefore($timestamps, $prices, $startOfDay);
-    $priceWeek = findClosestPriceBefore($timestamps, $prices, $startOfWeek);
-    $priceYear = findClosestPriceBefore($timestamps, $prices, $startOfYear);
     $yearHigh = $data['chart']['result'][0]['meta']['fiftyTwoWeekHigh'];
     $priceText = spellOutPrice($currentPrice);
 
-    $output = "הביטקויין עומד כעת על: $priceText דולר. ";
-    $output .= "מאז פתיחת היום נרשמה " . formatChange($currentPrice, $priceDay) . ". ";
-    $output .= "מתחילת השבוע נרשמה " . formatChange($currentPrice, $priceWeek) . ". ";
-    $output .= "מתחילת השנה נרשמה " . formatChange($currentPrice, $priceYear) . ". ";
-
+    echo "הביטקוין עומד כעת על $priceText דולר ";
+    echo "מאז פתיחת היום נרשמה " . formatChange($currentPrice, $priceDay) . " ";
+    
     if ($yearHigh && $yearHigh != 0) {
         $distance = (($currentPrice - $yearHigh) / $yearHigh) * 100;
         $absDist = abs($distance);
         $distText = $absDist == 1.00 ? "אחוז" : str_replace(".", " נקודה ", number_format($absDist, 2)) . " אחוז";
-        $output .= "המחיר הנוכחי רחוק מהשיא ב $distText.";
+        echo "המחיר הנוכחי רחוק מהשיא ב $distText";
     }
-
-    file_put_contents($cacheFile, $output);
-    echo $output;
 } else {
-    echo "המידע על הביטקוין אינו זמין כעת.";
+    echo "המידע על הביטקוין אינו זמין כעת";
 }
+?>
