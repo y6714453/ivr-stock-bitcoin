@@ -22,13 +22,11 @@ function findClosestPriceBefore($timestamps, $prices, $targetTimestamp) {
     return $bestPrice;
 }
 
-function formatChange($current, $previous) {
-    if ($previous === null || $previous == 0) return "אין נתון זמין";
-    $change = (($current - $previous) / $previous) * 100;
-    $sign = $change > 0 ? "עלייה" : ($change < 0 ? "ירידה" : "שינוי אפסי");
-    $absChange = abs($change);
-    $changeText = $absChange == 1.00 ? "אחוז" : str_replace(".", " נקודה ", number_format($absChange, 2)) . " אחוז";
-    return "$sign של $changeText";
+function numberToWords($number) {
+    $formatter = new NumberFormatter("he", NumberFormatter::SPELLOUT);
+    $text = $formatter->format($number);
+    $text = str_replace("־", "-", $text); // תיקון למילים כמו "עשרים־ושלושה"
+    return $text;
 }
 
 function spellOutPrice($price) {
@@ -39,13 +37,22 @@ function spellOutPrice($price) {
     if ($thousands > 0) {
         if ($thousands == 1) $text .= "אלף";
         elseif ($thousands == 2) $text .= "אלפיים";
-        else $text .= number_format($thousands, 0) . " אלף";
+        else $text .= numberToWords($thousands) . " אלף";
     }
     if ($remainder > 0) {
         if ($thousands > 0) $text .= " ו ";
-        $text .= number_format($remainder, 0);
+        $text .= numberToWords($remainder);
     }
     return $text;
+}
+
+function formatChange($current, $previous) {
+    if ($previous === null || $previous == 0) return "אין נתון זמין";
+    $change = (($current - $previous) / $previous) * 100;
+    $sign = $change > 0 ? "עלייה" : ($change < 0 ? "ירידה" : "שינוי אפסי");
+    $absChange = abs($change);
+    $changeText = ($absChange == 1.00) ? "אחוז" : numberToWords(floor($absChange)) . (fmod($absChange, 1) > 0 ? " נקודה " . str_replace(" ", " ", numberToWords(round(fmod($absChange, 1) * 100))) : "") . " אחוז";
+    return "$sign של $changeText";
 }
 
 $url = "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?range=6mo&interval=1d";
@@ -66,16 +73,16 @@ if (
     $yearHigh = $data['chart']['result'][0]['meta']['fiftyTwoWeekHigh'];
     $priceText = spellOutPrice($currentPrice);
 
-    echo "הביטקוין עומד כעת על $priceText דולר ";
-    echo "מאז פתיחת היום נרשמה " . formatChange($currentPrice, $priceDay) . " ";
+    echo "הביטקוין עומד כעת על $priceText דולר.";
+    echo " מאז פתיחת היום נרשמה " . formatChange($currentPrice, $priceDay) . ".";
     
     if ($yearHigh && $yearHigh != 0) {
         $distance = (($currentPrice - $yearHigh) / $yearHigh) * 100;
         $absDist = abs($distance);
-        $distText = $absDist == 1.00 ? "אחוז" : str_replace(".", " נקודה ", number_format($absDist, 2)) . " אחוז";
-        echo "המחיר הנוכחי רחוק מהשיא ב $distText";
+        $distText = ($absDist == 1.00) ? "אחוז" : numberToWords(floor($absDist)) . (fmod($absDist, 1) > 0 ? " נקודה " . str_replace(" ", " ", numberToWords(round(fmod($absDist, 1) * 100))) : "") . " אחוז";
+        echo " המחיר הנוכחי רחוק מהשיא ב $distText.";
     }
 } else {
-    echo "המידע על הביטקוין אינו זמין כעת";
+    echo "המידע על הביטקוין אינו זמין כעת.";
 }
 ?>
