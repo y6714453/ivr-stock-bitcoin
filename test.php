@@ -75,8 +75,6 @@ if (
 
     echo "הטיקר $symbol עומד כעת על: $priceText דולר. ";
     echo "מאז פתיחת היום נרשמה " . formatChange($currentPrice, $priceDay) . ". ";
-    echo "מתחילת השבוע נרשמה " . formatChange($currentPrice, $priceWeek) . ". ";
-    echo "מתחילת השנה נרשמה " . formatChange($currentPrice, $priceYear) . ". ";
 
     if ($yearHigh && $yearHigh != 0) {
         $distance = (($currentPrice - $yearHigh) / $yearHigh) * 100;
