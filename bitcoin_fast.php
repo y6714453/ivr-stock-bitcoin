@@ -22,11 +22,20 @@ function findClosestPriceBefore($timestamps, $prices, $targetTimestamp) {
     return $bestPrice;
 }
 
+function formatNumberWithDotText($number) {
+    $parts = explode(".", number_format($number, 2, ".", ""));
+    if (count($parts) == 2) {
+        return $parts[0] . " נקודה " . ltrim($parts[1], "0");
+    } else {
+        return $parts[0];
+    }
+}
+
 function formatChange($current, $previous) {
     if ($previous === null || $previous == 0) return "אין נתון זמין";
     $change = (($current - $previous) / $previous) * 100;
     $sign = $change > 0 ? "עלייה" : ($change < 0 ? "ירידה" : "שינוי אפסי");
-    $absChange = number_format(abs($change), 2);
+    $absChange = formatNumberWithDotText(abs($change));
     return "$sign של $absChange אחוז";
 }
 
@@ -70,8 +79,8 @@ if (
     
     if ($yearHigh && $yearHigh != 0) {
         $distance = (($currentPrice - $yearHigh) / $yearHigh) * 100;
-        $absDist = number_format(abs($distance), 2);
-        echo " המחיר הנוכחי רחוק מהשיא ב $absDist אחוז.";
+        $absDistText = formatNumberWithDotText(abs($distance));
+        echo " המחיר הנוכחי רחוק מהשיא ב $absDistText אחוז.";
     }
 } else {
     echo "המידע על הביטקוין אינו זמין כעת.";
