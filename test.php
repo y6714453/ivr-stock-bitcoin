@@ -65,16 +65,20 @@ if (
     $prices = $data['chart']['result'][0]['indicators']['quote'][0]['close'];
     $now = time();
     $startOfDay = strtotime("today", $now);
-    $startOfWeek = strtotime("last sunday", $now);
     $startOfYear = strtotime(date("Y-01-01", $now));
+    $startOf90DaysAgo = strtotime("-90 days", $now);
+
     $priceDay = findClosestPriceBefore($timestamps, $prices, $startOfDay);
-    $priceWeek = findClosestPriceBefore($timestamps, $prices, $startOfWeek);
     $priceYear = findClosestPriceBefore($timestamps, $prices, $startOfYear);
+    $price90Days = findClosestPriceBefore($timestamps, $prices, $startOf90DaysAgo);
+
     $yearHigh = $data['chart']['result'][0]['meta']['fiftyTwoWeekHigh'];
     $priceText = spellOutPrice($currentPrice);
 
     echo "הטיקר $symbol עומד כעת על: $priceText דולר. ";
     echo "מאז פתיחת היום נרשמה " . formatChange($currentPrice, $priceDay) . ". ";
+    echo "בשלושת החודשים האחרונים נרשמה " . formatChange($currentPrice, $price90Days) . ". ";
+    echo "מאז תחילת השנה נרשמה " . formatChange($currentPrice, $priceYear) . ". ";
 
     if ($yearHigh && $yearHigh != 0) {
         $distance = (($currentPrice - $yearHigh) / $yearHigh) * 100;
