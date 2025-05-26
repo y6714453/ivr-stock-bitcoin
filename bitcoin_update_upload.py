@@ -5,10 +5,10 @@ import requests
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 import os
 
-# 🟡 טוקן של ימות (נשלף ממשתנה סביבה)
-token = os.getenv("YEMOT_TOKEN")
+# 🟡 טוקן של ימות (אפשר גם לשים כמשתנה סביבה במקום בקובץ)
+token = "xh8jRwCtZEqR4jxb"
 
-# 🔄 פונקציית שליפה מה-API שלך (טקסט להקראה)
+# 🔄 שליפת טקסט מעודכן מה-API שלך
 def get_bitcoin_text():
     try:
         response = requests.get(
@@ -74,7 +74,7 @@ def upload_to_yemot():
     except Exception as e:
         print("❌ שגיאה בהעלאה לימות:", e)
 
-# 🧠 הרצה ראשית
+# 🧠 הרצה
 async def main():
     text = get_bitcoin_text()
     await create_mp3(text)
