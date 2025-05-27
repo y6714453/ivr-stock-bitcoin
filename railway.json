@@ -1,11 +1,4 @@
 {
-  "build": {
-    "builder": "NIXPACKS",
-    "buildCommand": null
-  },
-  "deploy": {
-    "startCommand": "php -S 0.0.0.0:$PORT router.php"
-  },
   "crons": [
     {
       "name": "update_bitcoin_job",
