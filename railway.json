@@ -5,5 +5,12 @@
   },
   "deploy": {
     "startCommand": "php -S 0.0.0.0:$PORT router.php"
-  }
+  },
+  "crons": [
+    {
+      "name": "update_bitcoin_job",
+      "command": "python update_btc_voice.py",
+      "schedule": "*/5 * * * *"
+    }
+  ]
 }
