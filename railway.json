@@ -9,7 +9,7 @@
   "crons": [
     {
       "name": "update_bitcoin_job",
-      "command": "python update_btc_voice.py",
+      "command": "python bitcoin_update_upload.py",
       "schedule": "*/5 * * * *"
     }
   ]
